@@ -10,16 +10,16 @@
       <el-form ref="form" :model="form" label-width="80px">
         <el-form-item label="状态">
           <el-radio-group v-model="status">
-            <el-radio label="null"></el-radio>
-            <el-radio label="0">草稿</el-radio>
-            <el-radio label="1">待审核</el-radio>
-            <el-radio label="2">审核通过</el-radio>
-            <el-radio label="3">审核失败</el-radio>
-            <el-radio label="4">已删除</el-radio>
+            <el-radio :label="null">全部</el-radio>
+            <el-radio :label="0">草稿</el-radio>
+            <el-radio :label="1">待审核</el-radio>
+            <el-radio :label="2">审核通过</el-radio>
+            <el-radio :label="3">审核失败</el-radio>
+            <el-radio :label="4">已删除</el-radio>
           </el-radio-group>
         </el-form-item>
         <el-form-item label="频道">
-          <el-select v-model="channel" placeholder="请选择">\
+          <el-select v-model="channel" placeholder="请选择">
             <el-option
               label="全部"
               :value="null"
@@ -46,7 +46,7 @@
           </el-date-picker>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary">筛选</el-button>
+          <el-button type="primary" @click="loadarticle">筛选</el-button>
         </el-form-item>
       </el-form>
     </el-card>
@@ -63,13 +63,13 @@
             width="180">
             <template slot-scope="scope">
               <el-image
-                style="width: 50px; height: 50px"
+                style="width: 70px; height: 70px"
                 :src="scope.row.cover.images[0]"
                 fit="cover"
                 lazy
               >
               <div slot="placeholder" class="image-slot">
-                加载中<span class="dot">...</span>
+                加载中<span class="dot">..fefe.</span>
               </div>
               </el-image>
             </template>
@@ -80,8 +80,16 @@
             width="180">
           </el-table-column>
           <el-table-column
-            prop="status"
+            prop=""
             label="状态">
+            <template slot-scope="scope">
+              <el-tag :type="articleStatus[scope.row.status].type">{{ articleStatus[scope.row.status].text }}</el-tag>
+              <!-- <el-tag v-if="scope.row.status === 0" type="warning">草稿</el-tag>
+              <el-tag v-else-if="scope.row.status === 1">待审核</el-tag>
+              <el-tag v-else-if="scope.row.status === 2" type="success">审核通过</el-tag>
+              <el-tag v-else-if="scope.row.status === 3" type="danger">审核失败</el-tag>
+              <el-tag v-else-if="scope.row.status === 4" type="info">已删除</el-tag> -->
+            </template>
           </el-table-column>
           <el-table-column
             prop="pubdate"
@@ -90,8 +98,21 @@
           <el-table-column
             prop=""
             label="操作">
-            <el-button type="primary" icon="el-icon-edit" circle></el-button>
-            <el-button type="danger" icon="el-icon-delete" circle @click="del(id)"></el-button>
+              <template slot-scope="scope">
+                <el-button
+                  size="mini"
+                  circle
+                  icon="el-icon-edit"
+                  type="primary"
+                ></el-button>
+                <el-button
+                  size="mini"
+                  type="danger"
+                  icon="el-icon-delete"
+                  circle
+                  @click="del(scope.row.id)"
+                ></el-button>
+              </template>
           </el-table-column>
         </el-table>
         <el-pagination
@@ -100,13 +121,15 @@
           :total="total_count"
           style="float:right; margin:20px 0px"
           :current-page.sync="page"
+          :page-size="pageSize"
+          @current-change="pageonload"
           >
         </el-pagination>
     </el-card>
   </div>
 </template>
 <script>
-import { getArticle, getChannel } from '@/api/user.js'
+import { getArticle, getChannel, delArticle } from '@/api/user.js'
 export default {
   name: 'Article',
   components: {
@@ -114,13 +137,21 @@ export default {
   data () {
     return {
       form: {
+        ab: 's'
       },
+      articleStatus: [
+        { status: 0, text: '草稿', type: 'info' }, // 0
+        { status: 1, text: '待审核', type: '' }, // 1
+        { status: 2, text: '审核通过', type: 'success' }, // 2
+        { status: 3, text: '审核失败', type: 'warning' }, // 3
+        { status: 4, text: '已删除', type: 'danger' } // 4
+      ],
       channel: null,
-      channelList: '',
-      pubdate: '',
+      channelList: [],
+      pubdate: null,
       status: null,
-      total_count: '',
-      tableDate: {},
+      total_count: 0,
+      tableDate: [],
       pageSize: 10,
       page: 1
     }
@@ -132,13 +163,15 @@ export default {
     this.loadchannel()
   },
   methods: {
-    loadarticle () {
+    // 加载文章
+    loadarticle (val, page = 1) {
+      console.log(val)
       const a = {
         status: this.status,
         channel_id: this.channel,
         begin_pubdate: this.pubdate ? this.pubdate[0] : null,
         end_pubdata: this.pubdate ? this.pubdate[1] : null,
-        page: this.page,
+        page: page,
         per_page: this.pageSize
       }
       console.log(a)
@@ -147,7 +180,7 @@ export default {
         channel_id: this.channel,
         begin_pubdate: this.pubdate ? this.pubdate[0] : null,
         end_pubdata: this.pubdate ? this.pubdate[1] : null,
-        page: this.page,
+        page: page,
         per_page: this.pageSize
       }).then((res) => {
         console.log(res.data)
@@ -157,14 +190,38 @@ export default {
         console.log(err)
       })
     },
+    // 加载频道
     loadchannel () {
       getChannel().then((res) => {
-        console.log(res)
+        // console.log(res)
         this.channelList = res.data.data.channels
       })
     },
+    // 页面加载
+    pageonload (page) {
+      this.loadarticle(page)
+    },
+    // 删除
     del (id) {
-      console.log(id)
+      this.$confirm('确认删除吗？', '删除提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+      // console.log(id)
+        delArticle(id.toString()).then((res) => {
+          console.log(res)
+          this.$message({
+            type: 'success',
+            message: '删除成功!'
+          })
+          this.loadarticle(this.page)
+        }).catch(() => {
+          console.log('删除错误')
+        })
+      }).catch(() => {
+        console.log('取消删除')
+      })
     }
   },
   mounted () {

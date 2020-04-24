@@ -1,6 +1,15 @@
 import axios from 'axios'
+import JSONbig from 'json-bigint'
 const request = axios.create({
-  baseURL: 'http://ttapi.research.itcast.cn'
+  baseURL: 'http://ttapi.research.itcast.cn',
+  transformResponse: [function (data) {
+    // 对 data 进行任意转换处理
+    try {
+      return JSONbig.parse(data)
+    } catch {
+      return data
+    }
+  }]
 })
 // 添加请求拦截器
 request.interceptors.request.use(function (config) {

@@ -43,9 +43,9 @@ export default {
       const token = window.localStorage.getItem('token')
       console.log(`Bearer ${token}`, typeof (token))
       getUser().then(res => {
-        console.log(res)
+        // console.log(res)
         this.user = res.data.data
-        console.log(this.user)
+        // console.log(this.user)
       }).catch(() => {
         console.log('获取信息失败')
       })
