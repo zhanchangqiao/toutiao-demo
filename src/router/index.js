@@ -4,6 +4,8 @@ import login from '@/views/login/index.vue'
 import home from '@/views/home/index.vue'
 import firstpage from '@/views/firstpage/firstpage.vue'
 import Article from '@/views/article/article.vue'
+import Publish from '@/views/publish/publish.vue'
+import Image from '@/views/image/image.vue'
 Vue.use(VueRouter)
 const routes = [
   {
@@ -24,6 +26,16 @@ const routes = [
         path: '/article',
         name: 'article',
         component: Article
+      },
+      {
+        path: '/publish',
+        name: 'publish',
+        component: Publish
+      },
+      {
+        path: '/image',
+        name: 'iamge',
+        component: Image
       }
     ]
   }

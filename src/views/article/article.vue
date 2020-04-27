@@ -104,6 +104,7 @@
                   circle
                   icon="el-icon-edit"
                   type="primary"
+                  @click="edit(scope.row.id)"
                 ></el-button>
                 <el-button
                   size="mini"
@@ -222,6 +223,9 @@ export default {
       }).catch(() => {
         console.log('取消删除')
       })
+    },
+    edit (id) {
+      this.$router.push('/publish?id=' + id)
     }
   },
   mounted () {
