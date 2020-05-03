@@ -53,7 +53,6 @@ export default {
   },
   methods: {
     onLogin (formName) {
-      console.log(formName)
       this.$refs[formName].validate((valid) => {
         if (!valid) {
           return
@@ -63,15 +62,11 @@ export default {
     },
     login () {
       this.btn = true
-      console.log(1, loginuser)
-      console.log(this.user)
       loginuser(this.user).then(res => {
-        console.log(res)
         this.$message({
           message: '登录成功！',
           type: 'success'
         })
-        console.log(res)
         window.localStorage.setItem('token', res.data.data.token)
         this.btn = false
         this.$router.push({ name: 'home' })

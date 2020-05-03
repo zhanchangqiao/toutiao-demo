@@ -25,6 +25,15 @@
             <el-radio :label="0">无图</el-radio>
             <el-radio :label="-1">自动</el-radio>
           </el-radio-group>
+          <template v-if="msg.cover.type > 0">
+            <div class="box">
+              <upload-image v-model="msg.cover.images[index-1]" v-for="index in msg.cover.type" :key="index">
+              </upload-image>
+            </div>
+            <!-- <el-row :gutter="20" -->
+              <!-- 间隔10px xs显示2张 sm md显示4张 lg显示6张 -->
+            <!-- </el-row> -->
+          </template>
         </el-form-item>
         <el-form-item label="频道" prop="channel_id">
           <el-select v-model="msg.channel_id" placeholder="请选择">
@@ -62,21 +71,26 @@ import {
   Image
 } from 'element-tiptap'
 import { getChannel, pubArtile, appointArtile, updateArtile, uploadImage } from '@/api/user.js'
+import UploadImage from './components/upload-image'
 export default {
   name: 'Publish',
   components: {
+    UploadImage
   },
   data () {
     return {
       ruleForm: {
       },
+      cover: 3,
       msg: {
+        cove1r: 4,
         title: '',
         content: '',
         channel_id: null,
         cover: {
-          type: 0,
-          images: []
+          type: -1,
+          images: [],
+          cover: 5
         }
       },
       way: false,
@@ -90,7 +104,6 @@ export default {
           // { required: true, message: '请输入文章内容', trigger: 'change' }
           {
             validator (rule, value, callback) {
-              console.log('content validator')
               if (value === '<p></p>') {
                 // 验证失败
                 callback(new Error('请输入文章内容'))
@@ -149,25 +162,16 @@ export default {
   methods: {
     loadchannel () {
       getChannel().then((res) => {
-        // console.log(res)
         this.channelList = res.data.data.channels
       })
     },
     loadone () {
       appointArtile(this.$route.query.id).then((res) => {
-        console.log(res)
         this.msg = res.data.data
-      }).catch((err) => {
-        console.log(err)
+      }).catch(() => {
       })
     },
     publ (darft = false) {
-      // console.log(formName)
-      // console.log(this.$refs[formName])
-      // this.$refs[formName].validate((valid) => {
-      //   console.log(valid)
-      //   if (valid) {
-      //     alert('submit!')
       // 当是修改界面那么就是true
       if (this.$route.query.id) {
         this.update(this.$route.query.id, this.msg, darft)
@@ -178,15 +182,9 @@ export default {
             message: '发布成功!'
           })
           this.resetForm('ruleForm')
-        }).catch((err) => {
-          console.log(err)
+        }).catch(() => {
         })
       }
-      // } else {
-      //   console.log('error submit!!')
-      //   return false
-      // }
-    // })
     },
     resetForm (formName) {
       this.$refs[formName].resetFields()
@@ -198,8 +196,7 @@ export default {
           message: '修改成功!'
         })
         this.$router.push({ name: 'article' })
-      }).catch((err) => {
-        console.log(err, '修改失败')
+      }).catch(() => {
       })
     }
   },
@@ -235,5 +232,9 @@ export default {
 }
 .el-form {
   text-align: left;
+}
+.box{
+  display: flex;
+  justify-content: flex-start;
 }
 </style>

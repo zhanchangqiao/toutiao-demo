@@ -8,7 +8,7 @@
             <div><i :class="{'el-icon-d-arrow-left': !isCollapse, 'el-icon-d-arrow-right': isCollapse}" @click="isCollapse=!isCollapse"></i><span style="margin-left:10px">江苏传智播客科技教育有限公司</span></div>
               <el-dropdown>
               <span class="el-dropdown-link">
-                <el-avatar src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png" style="vertical-align: middle; margin-right: 10px"></el-avatar>
+                <el-avatar :src="user.photo" style="vertical-align: middle; margin-right: 10px"></el-avatar>
                 <span>{{user.name}}</span>
                 <i class="el-icon-arrow-down el-icon--right"></i>
               </span>
@@ -29,6 +29,7 @@
 <script>
 import ElAside from '@/views/layout/aside'
 import { getUser } from '@/api/user.js'
+import EventBus from '@/utils/Event-bus.js'
 export default {
   components: { ElAside },
   data () {
@@ -40,14 +41,9 @@ export default {
   computed: {},
   methods: {
     getuser () {
-      const token = window.localStorage.getItem('token')
-      console.log(`Bearer ${token}`, typeof (token))
       getUser().then(res => {
-        // console.log(res)
         this.user = res.data.data
-        // console.log(this.user)
       }).catch(() => {
-        console.log('获取信息失败')
       })
     },
     goout () {
@@ -72,7 +68,12 @@ export default {
   created () {
     this.getuser()
   },
-  mounted () {},
+  mounted () {
+    EventBus.$on('upuser', (res) => {
+      this.user.name = res.name
+      this.user.photo = res.photo
+    })
+  },
   beforeCreate () {}, // 生命周期 - 创建之前
   beforeMount () {}, // 生命周期 - 挂载之前
   beforeUpdate () {}, // 生命周期 - 更新之前

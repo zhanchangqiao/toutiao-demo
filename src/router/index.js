@@ -6,6 +6,9 @@ import firstpage from '@/views/firstpage/firstpage.vue'
 import Article from '@/views/article/article.vue'
 import Publish from '@/views/publish/publish.vue'
 import Image from '@/views/image/image.vue'
+import Comment from '@/views/comment/comment.vue'
+import Setting from '@/views/setting/setting.vue'
+import Fans from '@/views/fans/fans.vue'
 Vue.use(VueRouter)
 const routes = [
   {
@@ -36,6 +39,21 @@ const routes = [
         path: '/image',
         name: 'iamge',
         component: Image
+      },
+      {
+        path: '/comment',
+        name: 'comment',
+        component: Comment
+      },
+      {
+        path: '/setting',
+        name: 'setting',
+        component: Setting
+      },
+      {
+        path: '/fans',
+        name: 'fans',
+        component: Fans
       }
     ]
   }

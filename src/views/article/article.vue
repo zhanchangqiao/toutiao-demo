@@ -166,16 +166,6 @@ export default {
   methods: {
     // 加载文章
     loadarticle (val, page = 1) {
-      console.log(val)
-      const a = {
-        status: this.status,
-        channel_id: this.channel,
-        begin_pubdate: this.pubdate ? this.pubdate[0] : null,
-        end_pubdata: this.pubdate ? this.pubdate[1] : null,
-        page: page,
-        per_page: this.pageSize
-      }
-      console.log(a)
       getArticle({
         status: this.status,
         channel_id: this.channel,
@@ -184,17 +174,14 @@ export default {
         page: page,
         per_page: this.pageSize
       }).then((res) => {
-        console.log(res.data)
         this.tableDate = res.data.data.results
         this.total_count = res.data.data.total_count
-      }).catch((err) => {
-        console.log(err)
+      }).catch(() => {
       })
     },
     // 加载频道
     loadchannel () {
       getChannel().then((res) => {
-        // console.log(res)
         this.channelList = res.data.data.channels
       })
     },
@@ -209,19 +196,15 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-      // console.log(id)
         delArticle(id.toString()).then((res) => {
-          console.log(res)
           this.$message({
             type: 'success',
             message: '删除成功!'
           })
           this.loadarticle(this.page)
         }).catch(() => {
-          console.log('删除错误')
         })
       }).catch(() => {
-        console.log('取消删除')
       })
     },
     edit (id) {
