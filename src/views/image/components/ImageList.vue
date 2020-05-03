@@ -121,7 +121,7 @@ export default {
 
     isShowSelected: {
       type: Boolean,
-      default: true
+      default: false
     }
   },
   data () {

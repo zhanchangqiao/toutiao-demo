@@ -110,7 +110,7 @@ export default {
   destroyed () {} // 生命周期 - 销毁完成
 }
 </script>
-<style lang='scss' scoped>
+<style lang='less' scoped>
 .text {
   font-size: 14px;
 }
